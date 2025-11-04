@@ -1,6 +1,6 @@
 import flet as ft
 from UI.alert import AlertManager
-
+from model.model import Autonoleggio
 '''
     VIEW:
     - Rappresenta l'interfaccia utente
@@ -50,7 +50,7 @@ class View:
         self.input_responsabile = ft.TextField(value=self.controller.get_responsabile(), label="Responsabile")
 
         # ListView per mostrare la lista di auto aggiornata
-        self.lista_auto = ft.ListView(expand=True, spacing=5, padding=10, auto_scroll=True)
+        self.lista_auto = ft.ListView(height=150, spacing=5, padding=10, auto_scroll=True)
 
         # TextField per ricerca auto per modello
         self.input_modello_auto = ft.TextField(label="Modello")
@@ -63,7 +63,9 @@ class View:
         pulsante_conferma_responsabile = ft.ElevatedButton("Conferma", on_click=self.controller.conferma_responsabile)
 
         # Altri Pulsanti da implementare (es. "Mostra" e "Cerca")
-        # TODO
+        pulsante_mostra= ft.ElevatedButton("Mostra", on_click=self.aggiorna_lista_auto)     #non metto le parentesi perchè cosi la fz viene eseguita solo quando clicco il bottone (se le mettessi py la esegue comunque)
+
+        pulsante_cerca=ft.ElevatedButton("Cerca", on_click=self.cerca_auto)
 
         # --- LAYOUT ---
         self.page.add(
@@ -82,13 +84,45 @@ class View:
             ft.Divider(),
 
             # Sezione 3
-            # TODO
+            ft.Row(spacing=50,
+                   controls=[ft.Text("Automobili", size=20),pulsante_mostra],
+                   alignment=ft.MainAxisAlignment.START),
+            self.lista_auto,
+            ft.Divider(),
 
             # Sezione 4
-            # TODO
-        )
+            ft.Row(spacing=50,
+                   controls=[ft.Text("Cerca automobile", size=20),self.input_modello_auto, pulsante_cerca],
+                   alignment = ft.MainAxisAlignment.START),
+            self.lista_auto_ricerca,
+            )
 
-    def cambia_tema(self, e):
+
+    def cambia_tema(self, e): #handler (funzione che viene chiamata quando accade l'evento) che gestisce l'evento e
         self.page.theme_mode = ft.ThemeMode.DARK if self.toggle_cambia_tema.value else ft.ThemeMode.LIGHT
         self.toggle_cambia_tema.label = "Tema scuro" if self.toggle_cambia_tema.value else "Tema chiaro"
+        self.page.update()
+
+    def aggiorna_lista_auto(self, e):
+        self.lista_auto.controls.clear()
+        automobili = self.controller.get_automobili()
+
+        if not automobili:
+            self.lista_auto.controls.append(ft.Text("Nessuna automobile trovata"))
+        else:
+            for auto in automobili:
+                self.lista_auto.controls.append(ft.Text(f"{auto}"))     #aggiunge alla lista grafica "controls"
+
+        self.page.update()
+
+    def cerca_auto(self, e):
+        self.lista_auto_ricerca.controls.clear()
+        automobili = self.controller.cerca_auto_per_modello(self.input_modello_auto.value)
+
+        if not automobili:
+            self.lista_auto_ricerca.controls.append(ft.Text("Nessuna automobile trovata"))
+        else:
+            for auto in automobili:
+                self.lista_auto_ricerca.controls.append(ft.Text(f"{auto}"))
+
         self.page.update()

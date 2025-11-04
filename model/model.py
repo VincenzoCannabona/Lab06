@@ -30,13 +30,21 @@ class Autonoleggio:
     def responsabile(self, responsabile):
         self._responsabile = responsabile
 
-    def get_automobili(self) -> list[Automobile] | None:
+    def get_automobili(self) -> list[Automobile] | None:        #->... annotazione per specificare i valori di ritorno della funzione che ci aspettiamo (non  cambia il comportamento del programma)
         """
             Funzione che legge tutte le automobili nel database
             :return: una lista con tutte le automobili presenti oppure None
         """
+        cnx=get_connection()
+        cursor = cnx.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM automobile")
+        lista_automobili=[]
+        for row in cursor:
+            lista_automobili.append(row)
 
-        # TODO
+        cnx.close()
+        return lista_automobili if lista_automobili else None   #in py una lista è considerata false se vuota
+
 
     def cerca_automobili_per_modello(self, modello) -> list[Automobile] | None:
         """
@@ -44,4 +52,12 @@ class Autonoleggio:
             :param modello: il modello dell'automobile
             :return: una lista con tutte le automobili di marca e modello indicato oppure None
         """
-        # TODO
+        cnx = get_connection()
+        cursor = cnx.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM automobile WHERE modello=%s", (modello,))
+        lista_automobili_modello=[]
+        for row in cursor:
+            lista_automobili_modello.append(row)
+
+        cnx.close()
+        return lista_automobili_modello if lista_automobili_modello else None

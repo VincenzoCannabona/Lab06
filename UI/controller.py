@@ -9,7 +9,7 @@ from model.model import Autonoleggio
 '''
 
 class Controller:
-    def __init__(self, view : View, model : Autonoleggio):
+    def __init__(self, view : View, model : Autonoleggio):      #view:View è un annotazione usata per chiarezza che indica che l'oggetto view deve comportarsi come un'istanza della classe View
         self._model = model
         self._view = view
 
@@ -28,4 +28,9 @@ class Controller:
         self._view.update()
 
     # Altre Funzioni Event Handler
-    # TODO
+    def get_automobili(self):
+        return self._model.get_automobili()
+
+    def cerca_auto_per_modello(self, modello):
+        return self._model.cerca_automobili_per_modello(modello)
+
